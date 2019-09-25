@@ -1,0 +1,90 @@
+;; The first three lines of this file were inserted by DrRacket. They record metadata
+;; about the language level of this file in a form that our tools can easily process.
+#reader(lib "htdp-intermediate-reader.ss" "lang")((modname |2017 Midterm 2|) (read-case-sensitive #t) (teachpacks ((lib "image.rkt" "teachpack" "2htdp") (lib "universe.rkt" "teachpack" "2htdp") (lib "batch-io.rkt" "teachpack" "2htdp"))) (htdp-settings #(#t constructor repeating-decimal #f #t none #f ((lib "image.rkt" "teachpack" "2htdp") (lib "universe.rkt" "teachpack" "2htdp") (lib "batch-io.rkt" "teachpack" "2htdp")) #f)))
+;; Problem 1
+;; take-while : (X) [List-of X] [X -> Boolean] -> [List-of X}
+;; takes a list and a predicate, and re- turns all the elements
+;; from the front of the list for which the predicate returns true
+(define (take-while lox predicate)
+  (cond
+    [(empty? lox) lox]
+    [(cons? lox) (if (predicate (first lox))
+                     (cons (first lox) (take-while (rest lox) predicate))
+                     '())]))
+
+;; Problem 2
+;; A Count is a (make-count Natural Natural)
+;; INTERPRETATION:
+;; the number of exact multiples of a number
+;; and the number of non-multiples in some collection of numbers
+(define-struct count [multiples leftovers])
+
+;; counts-of-multiples : [List-of NaturalNumber] NaturalNumber -> Count
+;; takes a list of Naturals and a Natural, and produces a Count of how many
+;; numbers in the given list are a multiple of the given number and how many
+;; numbers in the list are not
+(check-expect (counts-of-multiples (list 1 2 3 4 5 6 7) 2) (make-count 3 4))
+(check-expect (counts-of-multiples '() 3) (make-count 0 0))
+(define (counts-of-multiples lon n)
+  (local [;; multiples-num : Number [List-of Number] -> [List-of Number]
+          (define (multiples-num num sofar)
+            (if (= 0 (modulo num n))
+                (cons num sofar)
+                sofar))
+          ;; leftovers-num : Number [List-of Number] -> [List-of Number]
+          (define (leftovers-num num sofar)
+            (if (= 0 (modulo num n))
+                sofar
+                (cons num sofar)))]
+    (make-count (length (foldr multiples-num '() lon))
+                (length (foldr leftovers-num '() lon)))))
+
+;; Problem 3
+; A Shrub is one of
+; - Number
+; - [List-of Shrub]
+; INTERPRETATION:
+; Describes a branching garden plant, either
+; the size of a leaf (in inches), or a fork with an arbitrary
+; number of branches coming off it
+(define SHRUB (list (list 1
+                          (list 1)
+                          (list 2)
+                          (list 3))
+                    (list (list 5)
+                          (list 2)
+                          (list 9))))
+
+;; max-branches : Shrub -> Number
+;; computes the largest number of branches coming out of a fork in a Shrub.
+(check-expect (max-branches SHRUB) 9)
+(define (max-branches s)
+  (cond
+    [(number? s) s]
+    [(list? s) (max-fork s)]))
+
+;; max-fork : [List-of Shrub] -> Number
+(define (max-fork los)
+  (cond
+    [(empty? los) 0]
+    [(cons? los) (max (max-branches (first los))
+                      (max-fork (rest los)))]))
+
+
+;; Problem 4
+; A StringExpr is one of
+; - String
+; - (list StringExpr '+ StringExpr)
+
+;; combine : StringExpr -> 
+;; takes a StringExpr and concatenates all the Strings inside it
+
+
+
+
+
+
+
+
+
+
